@@ -2,10 +2,7 @@ package ticket;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
-//Напишите пример перехвата и обработки исключения с использованием собственных исключений.
 public class Ticket {
     public static ArrayList<ArrayList<String>> masterShelf = new ArrayList<>();
 
@@ -34,6 +31,10 @@ public class Ticket {
         books.add("Iron man");
         books.add("The Count of Monte Cristo");
         books.add("Hero");
+        books.add("Heroes");
+        books.add("Mont Blanc");
+        books.add("Domino");
+        ArrayList<String> book2 = new ArrayList<>();
         try {
             transformer(books);
         } catch (MyExceptional e) {
@@ -41,41 +42,52 @@ public class Ticket {
         }
     }
 
-    public static void transformer(ArrayList<String> book)throws MyExceptional {
-        int counter = book.size() / masterShelf.size();
-        validate(counter);
-        Collections.sort(book);
-        for (int i = 0; i < book.size(); i++) {
-            if (masterShelf.get(0).size() < counter + 1) {
-                masterShelf.get(0).add(book.get(i));
-            } else if (masterShelf.get(1).size() < counter) {
-                masterShelf.get(1).add(book.get(i));
-            } else if (masterShelf.get(2).size() < counter + 1) {
-                masterShelf.get(2).add(book.get(i));
-            } else if (masterShelf.get(3).size() < counter) {
-                masterShelf.get(3).add(book.get(i));
-            } else if (masterShelf.get(4).size() < counter + 1) {
-                masterShelf.get(4).add(book.get(i));
-            } else {
-                masterShelf.get(1).add(book.get(i));
-            }
-        }
-        printInfo(book);
-    }
-    public static int validate(int counter)throws MyExceptional{
+    public static int validate(int counter) throws MyExceptional {
         if (counter == 0) {
             throw new MyExceptional("Книг нет, передайте актуальный список книг, который нужно раскидать по полкам");
-        } return counter;
+        }
+        return counter;
     }
 
     public static void printInfo(ArrayList<String> book) {
-        int counter = masterShelf.get(0).size() + masterShelf.get(1).size() + masterShelf.get(2).size() + masterShelf.get(3).size() + masterShelf.get(4).size();
-        System.out.println("Количество книг " + book.size() + '\n' +
-                "На 1 полке лежит " + masterShelf.get(0).size() + " и включает в себя: " + masterShelf.get(0) + '\n'
-                + "На 2 полке лежит " + masterShelf.get(1).size() + " и включает в себя: " + masterShelf.get(1) + '\n'
-                + "На 3 полке лежит " + masterShelf.get(2).size() + " и включает в себя: " + masterShelf.get(2) + '\n'
-                + "На 4 полке лежит " + masterShelf.get(3).size() + " и включает в себя: " + masterShelf.get(3) + '\n'
-                + "На 5 полке лежит " + masterShelf.get(4).size() + " и включает в себя: " + masterShelf.get(4) + '\n'
+        int counter = 0;
+        for (int i = 0; i < masterShelf.size(); i++) {
+            counter = counter + masterShelf.get(i).size();
+        }
+        System.out.println("Количество книг " + book.size() + '\n'
                 + "Книг распределено: " + counter);
+        int number = 1;
+        for (int i = 0; i < masterShelf.size(); i++) {
+            System.out.printf("На %d полке лежит %d книг и включает в себя %s \n", number, masterShelf.get(i).size(), masterShelf.get(i));
+            number++;
+        }
+    }
+
+    public static void transformer(ArrayList<String> book) throws MyExceptional {
+        validate(book.size());
+        int counter = book.size() / masterShelf.size();
+        int extraBook = (book.size() % masterShelf.size());
+        Collections.sort(book);
+        for (int i = 0; i < book.size(); i++) {
+            if (extraBook > 0) {
+                for (int j = 0; j < masterShelf.size(); ) {
+                    if (masterShelf.get(j).size() < counter + 1 && j < extraBook) {
+                        masterShelf.get(j).add(book.get(i));
+                        i++;
+                    } else {
+                        j++;
+                    }
+                }
+            }
+            for (int j = 0; j < masterShelf.size(); ) {
+                if (masterShelf.get(j).size() < counter) {
+                    masterShelf.get(j).add(book.get(i));
+                    i++;
+                } else {
+                    j++;
+                }
+            }
+        }
+        printInfo(book);
     }
 }
